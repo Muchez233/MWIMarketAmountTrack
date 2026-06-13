@@ -1,0 +1,72 @@
+name: Scheduled Market Data Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0,6,12,18 * * *' # UTC 0, 6, 12, 18点执行
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      # 【核心优化】从 main 分支【仅】拉取 Python 脚本
+      - name: Checkout script from main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: scripts-repo
+          sparse-checkout: |
+            .github/scripts/updateMarketData.py
+          # 如果该脚本还依赖同目录下的其他配置文件，可以一并加上：
+          # .github/scripts/config.json 
+
+      # 【核心优化】从 gh-pages 分支【仅】拉取 marketdata 文件夹
+      - name: Checkout data from gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: data-repo
+          sparse-checkout: |
+            marketdata
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Execute data update script
+        run: |
+          # 确保目标目录存在
+          mkdir -p data-repo/marketdata
+          # 执行脚本
+          python scripts-repo/.github/scripts/updateMarketData.py data-repo/marketdata
+
+
+      - name: Commit and push updated data using native Git
+        run: |
+          # 1. 进入包含 .git 目录的根目录 (data-repo)
+          cd data-repo
+          
+          # 2. 配置 SSH 私钥
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # 3. 设置 Git 提交人信息为 Bot
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 4. 添加变更并提交 (使用 [skip ci] 防止无限循环)
+          git add marketdata/
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: scheduled market data update [skip ci]"
+            
+            # 5. 通过 SSH 推送到 gh-pages 分支
+            git remote set-url origin git@github.com:Muchez233/MWIMarketAmountTrack.git
+            GIT_SSH_COMMAND="ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            git push origin HEAD:gh-pages
+            
+            echo "✅ Data successfully pushed to gh-pages!"
+          else
+            echo "⚠️ No changes detected, skipping push."
+          fi

@@ -1,0 +1,5 @@
+# MWIMarketAmountTrack
+
+该项目通过GitHub Actions定时获取MilkyWayIdle市场数据,并利用网页进行可视化显示.
+
+通过平均价格反向推算每个时间段的市场两边的销售量,并将指定时间段的销售量按照一天的市场进行量化显示
