@@ -43,7 +43,7 @@ let allMarketData = new Map<number, Market>();
 async function getMarketFileList(): Promise<string[]> {
   const url = `${DATA_FOLDER}/${INDEX_FILE}`;
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {cache: 'no-store' });
     // 1. 检查网络请求是否成功
     if (!response.ok) {
       throw new Error(`Failed to fetch file list: ${response.status} ${response.statusText}`);
