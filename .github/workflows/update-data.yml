@@ -3,7 +3,7 @@ name: Scheduled Market Data Update
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *' # UTC 整点执行
+    - cron: '43 * * * *' # UTC 整点执行
 
 jobs:
   update-data:
