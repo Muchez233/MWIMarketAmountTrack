@@ -156,7 +156,7 @@ function displayTableData(items: string[], timestamps: number[]): void {
     let highPrice = -100;
     //总花费钱数 用于计算
     let totalMoney = -100;
-    //总包数 一个包是6小时数据
+    //总包数 一个包是1小时数据
     let packCnt = 0;
     //遍历所有时间戳数据
     for (const timestamp of timestamps) {
