@@ -108,8 +108,8 @@ function formatSecondsAgo(timestamp: number): string {
 
   const parts = []
   if (day) parts.push(`${day}天`)
-  if (hour) parts.push(`${hour}小时`)
-  if (minute) parts.push(`${minute}分钟`)
+  if (hour) parts.push(`${hour}时`)
+  if (minute) parts.push(`${minute}分`)
   return parts.length ? `${parts.join('')}前` : '刚刚'
 }
 //初始化滑块
@@ -180,9 +180,9 @@ function displayTableData(items: string[], timestamps: number[]): void {
       lowPrice: lowPrice,
       avgPrice: totalMoney / totalAmount,
       highPrice: highPrice,
-      totalAmount: totalAmount / packCnt * 4,
-      lowAmount: lowAmount / packCnt * 4,
-      highAmount: highAmount / packCnt * 4,
+      totalAmount: totalAmount / packCnt * 24,
+      lowAmount: lowAmount / packCnt * 24,
+      highAmount: highAmount / packCnt * 24,
     }
     ret.push(displaydata);
   }
@@ -253,7 +253,7 @@ function onSliderChanged(range: number[]): void {
   if (start === undefined || end === undefined) return;
   //1.获取有效数据量并显示
   let timestamps: number[] = [...allMarketData.keys()].filter(t => (t >= start) && (t <= end));
-  sliderHint.value = `总共数据为${timestamps.length}个 时长为${timestamps.length * 6}小时 时间范围为${new Date(start * 1000).toLocaleString('zh-CN')}-${new Date(end * 1000).toLocaleString('zh-CN')}`;
+  sliderHint.value = `总共数据为${timestamps.length}个 时长为${timestamps.length}小时 时间范围为${new Date(start * 1000).toLocaleString('zh-CN')}-${new Date(end * 1000).toLocaleString('zh-CN')}`;
   //2.更新表格
   displayTableData([
     "ultra_attack_coffee",
